@@ -1,11 +1,13 @@
-import random
+import random, time
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 
 state = True
+blink = False
+curr_time = 1000
+blink_time = 0
 xmax, xmin, ymax, ymin = None, None, None, None
-time = 1000
 diag = [(-000.1, 000.1), (000.1, -000.1), (000.1, 000.1), (-000.1, -000.1)]
 change_diag = [1, 0, 3, 2]
 points = []
@@ -63,29 +65,36 @@ def update(val):
         i[0] += diag[i[5]][0]
         i[1] += diag[i[5]][1]
     glutPostRedisplay()
-    glutTimerFunc(time, update, None)
+    glutTimerFunc(curr_time, update, None)
 
 
 def keyboardListener(key, x, y):
-    global time
+    global curr_time
     if key == GLUT_KEY_UP:
-        time = max(0, time - 50)
+        curr_time = max(0, curr_time - 50)
     elif key == GLUT_KEY_DOWN:
-        time += 50
+        curr_time += 50
 
 
 def mouseListener(button, state, x, y):
+    global blink, blink_time
     if button == GLUT_RIGHT_BUTTON:
         calc_region(x, y)
-        glutPostRedisplay()
+    elif button == GLUT_LEFT_BUTTON:
+        blink = True
+        blink_time = time.time()
+    glutPostRedisplay()
 
 
 def display():
+    global blink_time
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     if xmax != None:
         draw_region()
-        for x, y, r, g, b, d in points:
-            draw_point(x, y, r, g, b)
+        diff = (time.time() - blink_time) % 2
+        if not blink or diff <= 1:
+            for x, y, r, g, b, d in points:
+                draw_point(x, y, r, g, b)
     glutSwapBuffers()
 
 
@@ -97,7 +106,7 @@ wind = glutCreateWindow(b"Task 2: Building the Amazing Box")
 
 init()
 glutDisplayFunc(display)
-glutTimerFunc(time, update, None)
+glutTimerFunc(curr_time, update, None)
 glutMouseFunc(mouseListener)
 glutSpecialFunc(keyboardListener)
 glutMainLoop()
