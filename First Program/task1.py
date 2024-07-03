@@ -6,11 +6,10 @@ import random
 now = 0
 raindrops = []
 for i in range(150):
-    x1 = x2= random.uniform(-1, 1)
-    y1 = random.uniform(0, 1)
-    y2 = y1 - random.uniform(0.03, 0.08)
-    raindrops.append([x1, y1, x2, y2])
-
+    x1= random.uniform(-1, 1)
+    y1= random.uniform(0, 1)
+    y2= y1- random.uniform(0.03,0.08)
+    raindrops.append([x1,y1,y2])
 
 def init():
     glClearColor(1.0, 1.0, 1.0, 0)
@@ -86,10 +85,12 @@ def draw():
     # raindrops
     glColor3f(0.0, 0.0, 1.0)
     glBegin(GL_LINES)
-    for x1, y1, x2, y2 in raindrops:
+    for x1, y1, y2 in raindrops:
+        x2= x1+now
+        # y2= y1-0.05
         y_actual1 = lambda x: x + 0.5
         y_actual2 = lambda x: -x + 0.5
-        if -0.5 <= x2 <= 0.5 and (y2 <= y_actual1(x2) if x2 <= 0 else y2 <= y_actual2(x2)):
+        if (-0.5 <= x2 <= 0.5 or -0.5<=x1<=0.5) and (y2 <= y_actual1(x2) if x2 <= 0 else y2 <= y_actual2(x2)):
             continue
         glVertex2f(x1, y1)
         glVertex2f(x2, y2)
@@ -99,17 +100,18 @@ def draw():
 
 
 def update(val):
-    global now
+    assert -0.1<now<0.1
     for i in raindrops:
-        i[1] -= 0.01
-        i[3] -= 0.01
+        i[0]+= now
+        i[1] -= 0.01+abs(now)
+        i[2] -= 0.01+abs(now)
         if i[1] < -1:
             i[0] = random.uniform(-1, 1)
-            i[2]= i[0]+now
             i[1] = random.uniform(0, 1)
-            i[3] = i[1] - random.uniform(0.03, 0.08)+now
+            i[2]= i[1]- random.uniform(0.03,0.08)
+
     glutPostRedisplay()
-    glutTimerFunc(20, update, None)
+    glutTimerFunc(25, update, None)
 
 def keyboardListener(key, x, y):
     global now
@@ -117,11 +119,6 @@ def keyboardListener(key, x, y):
         now -= 0.001
     elif key == GLUT_KEY_RIGHT:
         now += 0.001
-    for i in raindrops:
-        i[2]+= 0.001
-        i[3]+= 0.001
-    glutPostRedisplay()
-    # print(now)
 
 # Main function
 glutInit()
