@@ -93,7 +93,7 @@ glutInit()
 glutInitDisplayMode(GLUT_RGBA)
 glutInitWindowSize(600, 600)
 glutInitWindowPosition(0, 0)
-wind = glutCreateWindow(b"Task 1: Building a House in Rainfall")
+wind = glutCreateWindow(b"Task 2: Building the Amazing Box")
 
 init()
 glutDisplayFunc(display)
