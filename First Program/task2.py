@@ -3,8 +3,8 @@ import random, time
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 
-state = True
-blink = False
+freeze, blink = False, False
+tmp_curr_time, tmp_blink = None, None
 curr_time = 1000
 blink_time = 0
 xmax, xmin, ymax, ymin = None, None, None, None
@@ -65,7 +65,8 @@ def update(val):
         i[0] += diag[i[5]][0]
         i[1] += diag[i[5]][1]
     glutPostRedisplay()
-    glutTimerFunc(curr_time, update, None)
+    if curr_time != -1:
+        glutTimerFunc(curr_time, update, None)
 
 
 def keyboardListener(key, x, y):
@@ -74,6 +75,22 @@ def keyboardListener(key, x, y):
         curr_time = max(0, curr_time - 50)
     elif key == GLUT_KEY_DOWN:
         curr_time += 50
+
+
+def keyboardListener2(key, x, y):
+    global freeze, curr_time, blink, tmp_curr_time, tmp_blink
+    if key == b' ':
+        if freeze:
+            freeze = False
+            curr_time, blink = tmp_curr_time, tmp_blink
+            glutTimerFunc(curr_time, update, None)
+
+        else:
+            freeze = True
+            tmp_curr_time, tmp_blink = curr_time, blink
+            curr_time = -1
+            blink = False
+    glutPostRedisplay()
 
 
 def mouseListener(button, state, x, y):
@@ -92,7 +109,7 @@ def display():
     if xmax != None:
         draw_region()
         diff = (time.time() - blink_time) % 2
-        if not blink or diff <= 1:
+        if not blink or diff <= 1 or freeze:
             for x, y, r, g, b, d in points:
                 draw_point(x, y, r, g, b)
     glutSwapBuffers()
@@ -109,4 +126,5 @@ glutDisplayFunc(display)
 glutTimerFunc(curr_time, update, None)
 glutMouseFunc(mouseListener)
 glutSpecialFunc(keyboardListener)
+glutKeyboardFunc(keyboardListener2)
 glutMainLoop()
