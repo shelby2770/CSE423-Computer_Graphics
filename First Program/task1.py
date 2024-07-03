@@ -1,16 +1,18 @@
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-from OpenGL.GLU import *
 import random
 
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+
 now = 0
-bg_color= 1
+bg_color = 1
 rain_drops = [[random.uniform(-1, 1), random.uniform(0, 1)] for i in range(150)]
+
 
 def init():
     glClearColor(bg_color, bg_color, bg_color, 0)
     glMatrixMode(GL_PROJECTION)
     glMatrixMode(GL_MODELVIEW)
+
 
 def draw_roof():
     glBegin(GL_TRIANGLES)
@@ -19,6 +21,7 @@ def draw_roof():
     glVertex2f(0.0, 0.5)
     glVertex2f(0.5, 0.0)
     glEnd()
+
 
 def draw_walls():
     glLineWidth(2)
@@ -32,6 +35,7 @@ def draw_walls():
     glVertex2f(0.49, 0.0)
     glEnd()
 
+
 def draw_door():
     glLineWidth(1)
     glBegin(GL_LINES)
@@ -44,11 +48,13 @@ def draw_door():
     glVertex2f(-0.2, -0.8)
     glEnd()
 
+
 def draw_door_lock():
     glPointSize(4)
     glBegin(GL_POINTS)
     glVertex2f(-0.25, -0.55)
     glEnd()
+
 
 def draw_window():
     glBegin(GL_LINES)
@@ -68,6 +74,7 @@ def draw_window():
     glVertex2f(0.3, -0.25)
     glEnd()
 
+
 def draw_rain_drops():
     glColor3f(0.0, 0.0, 1.0)
     glBegin(GL_LINES)
@@ -81,16 +88,6 @@ def draw_rain_drops():
         glVertex2f(x1, y1)
         glVertex2f(x2, y2)
     glEnd()
-
-def display():
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    draw_roof()
-    draw_walls()
-    draw_door()
-    draw_door_lock()
-    draw_window()
-    draw_rain_drops()
-    glutSwapBuffers()
 
 
 def update(val):
@@ -111,11 +108,22 @@ def keyboardListener(key, x, y):
         now -= 0.001
     elif key == GLUT_KEY_RIGHT:
         now += 0.001
-    if key == GLUT_KEY_UP: #light to dark
-        bg_color = max(0, bg_color-0.1)
-    elif key == GLUT_KEY_DOWN: #dark to light
-        bg_color = min(1, bg_color+0.1)
+    if key == GLUT_KEY_UP:  # light to dark
+        bg_color = max(0, bg_color - 0.1)
+    elif key == GLUT_KEY_DOWN:  # dark to light
+        bg_color = min(1, bg_color + 0.1)
     init()
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    draw_roof()
+    draw_walls()
+    draw_door()
+    draw_door_lock()
+    draw_window()
+    draw_rain_drops()
+    glutSwapBuffers()
 
 
 glutInit()
