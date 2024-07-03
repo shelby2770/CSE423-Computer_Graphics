@@ -5,7 +5,7 @@ from OpenGL.GLUT import *
 
 state = True
 xmax, xmin, ymax, ymin = None, None, None, None
-speed = 0
+time = 1000
 diag = [(-000.1, 000.1), (000.1, -000.1), (000.1, 000.1), (-000.1, -000.1)]
 change_diag = [1, 0, 3, 2]
 points = []
@@ -63,12 +63,21 @@ def update(val):
         i[0] += diag[i[5]][0]
         i[1] += diag[i[5]][1]
     glutPostRedisplay()
-    glutTimerFunc(1000, update, None)
+    glutTimerFunc(time, update, None)
+
+
+def keyboardListener(key, x, y):
+    global time
+    if key == GLUT_KEY_UP:
+        time = max(0, time - 50)
+    elif key == GLUT_KEY_DOWN:
+        time += 50
 
 
 def mouseListener(button, state, x, y):
     if button == GLUT_RIGHT_BUTTON:
         calc_region(x, y)
+        glutPostRedisplay()
 
 
 def display():
@@ -88,8 +97,7 @@ wind = glutCreateWindow(b"Task 1: Building a House in Rainfall")
 
 init()
 glutDisplayFunc(display)
-glutTimerFunc(1000, update, None)
+glutTimerFunc(time, update, None)
 glutMouseFunc(mouseListener)
-
-# glutSpecialFunc(keyboardListener)
+glutSpecialFunc(keyboardListener)
 glutMainLoop()
